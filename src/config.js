@@ -2,7 +2,6 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const RammerheadJSMemCache = require('./classes/RammerheadJSMemCache.js');
-const RammerheadJSFileCache = require('./classes/RammerheadJSFileCache.js');
 
 const enableWorkers = os.cpus().length !== 1;
 
@@ -40,10 +39,9 @@ module.exports = {
     // restrict sessions to be only used per IP
     restrictSessionToIP: true,
 
-    // caching options for js rewrites. (disk caching not recommended for slow HDD disks)
-    // recommended: 50mb for memory, 5gb for disk
-    // jsCache: new RammerheadJSMemCache(5 * 1024 * 1024),
-    jsCache: new RammerheadJSFileCache(path.join(__dirname, '../cache-js'), 5 * 1024 * 1024 * 1024, 50000, enableWorkers),
+    // Keep rewritten JavaScript in memory to avoid synchronous disk I/O on hot requests.
+    // A 50 MiB LRU cache is the project's recommended starting point for memory caching.
+    jsCache: new RammerheadJSMemCache(50 * 1024 * 1024),
 
     // whether to disable http2 support or not (from proxy to destination site).
     // disabling may reduce number of errors/memory, but also risk
@@ -59,9 +57,8 @@ module.exports = {
     stripClientHeaders: [],
     // if you want to modify response headers, like removing the x-frame-options header, do it like so:
     // rewriteServerHeaders: {
-    //     // you can also specify a function to modify/add the header using the original value (undefined if adding the header)
-    //     // 'x-frame-options': (originalHeaderValue) => '',
-    //     'x-frame-options': null, // set to null to tell rammerhead that you want to delete it
+    //     // you can also specify a function to modify/add the header using the original value (undefined if adding a header)
+    //     // 'x-frame-options': null,
     // },
     rewriteServerHeaders: {},
 
