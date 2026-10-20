@@ -14,9 +14,7 @@ module.exports = {
     const hostname = new URL('https://' + host).hostname;
     return { hostname, port: 443, protocol: 'https:' };
   },
-  // Disable upstream HTTP/2: this can reduce proxy memory use and compatibility errors
-  // for sites whose HTTP/2 responses do not pass cleanly through the proxy.
-  disableHttp2: true,
+  // Keep upstream HTTP/2 enabled; disabling it can break WebSocket-heavy sites.
   // Use in-memory caching on an ephemeral instance.
   jsCache: new RammerheadJSMemCache(50 * 1024 * 1024),
   // Do not require a shared password for creating sessions.
