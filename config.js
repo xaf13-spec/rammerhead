@@ -18,6 +18,9 @@ module.exports = {
   jsCache: new RammerheadJSMemCache(50 * 1024 * 1024),
   // Do not require a shared password for creating sessions.
   password: null,
+  // Sessions are created through Vehemence's server API, then opened directly by the browser.
+  // Those requests come from different IPs, so IP-bound sessions return 403 on navigation.
+  restrictSessionToIP: false,
   // Render is behind a reverse proxy; use its forwarded client IP when available.
   getIP: (req) => {
     const forwarded = req.headers['x-forwarded-for'];
