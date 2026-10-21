@@ -24,7 +24,11 @@ module.exports = {
     }
     return { hostname, port: 443, protocol: 'https:' };
   },
-  // Keep upstream HTTP/2 enabled; disabling it can break WebSocket-heavy sites.
+  // Avoid Hammerhead's HTTP/2 destination-session path while diagnosing malformed
+  // destination URLs (ERR_INVALID_URL with input 'https://') seen in Railway logs.
+  // HTTP/1.1 fallback is more compatible for this deployment, though some sites may
+  // require HTTP/2 for specific features.
+  disableHttp2: true,
   // Use in-memory caching on an ephemeral instance.
   jsCache: new RammerheadJSMemCache(50 * 1024 * 1024),
   // Do not require a shared password for creating sessions.
